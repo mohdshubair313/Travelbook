@@ -1,0 +1,162 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+
+// ===============================    USER MANAGEMENT =======================================
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  name     String
+  mobileNo String? @unique
+  password String  // Hashed with bcrypt
+  
+  // ✅ Location Preferences (WHY: Auto-filter OLX to user's city)
+  city     String?  // "Delhi", "Mumbai"
+  state    String?  // "Delhi", "Maharashtra"
+  country  String   @default("India")
+  
+  // ✅ Budget Preferences (WHY: Auto-apply price filters)
+  defaultBudgetMin Int? @default(0)
+  defaultBudgetMax Int? @default(10000)
+  
+  // ✅ Travel Preferences (WHY: Show relevant options first)
+  preferredCategory   String? // "pg", "hotel", "flats"
+  preferredTransport  String? // "train", "flight", "bus", "cab"
+  
+  // ✅ Account Status (WHY: Security + Email verification)
+  isVerified    Boolean  @default(false)
+  emailVerified DateTime?
+  
+  // ✅ Timestamps (WHY: Track user activity)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  savedListings SavedListing[]  
+  @@index([email])
+  @@index([city]) // Fast lookup by location
+}
+
+// ========== LISTINGS (Scraped OLX Data) ==========
+
+model Listing {
+  id     String @id @default(cuid())
+  
+  // ✅ OLX Reference (WHY: Prevent duplicate scraping, link to original)
+  olxId  String @unique
+  olxUrl String
+  
+  // ✅ Basic Info (WHY: Display to user)
+  title       String
+  description String? @db.Text
+  category    String  // "pg", "rent-house", "cars", "bikes"
+  
+  // ✅ Pricing (WHY: Filtering + Sorting + Display)
+  price    String // "₹ 5,000" - Display format
+  priceRaw Int    // 5000 - For filtering/sorting
+  currency String @default("INR")
+  
+  // ✅ Location (WHY: Filter by city + Show on map)
+  location String // Full address
+  city     String // "Delhi"
+  state    String?
+  
+  // ✅ Property Details (WHY: Filter by rooms/size)
+  bedrooms   Int?
+  bathrooms  Int?
+  furnishing String? // "Furnished", "Unfurnished"
+  
+  // ✅ Images (WHY: Show photos to user)
+  images    String[]
+  mainImage String?
+  
+  // ✅ Seller Info (WHY: Contact + Trust signals)
+  sellerName     String
+  sellerPhone    String?
+  
+  // ✅ Lifecycle Management (WHY: Hide old/expired listings)
+  publishedAt DateTime
+  scrapedAt   DateTime @default(now())
+  isActive    Boolean  @default(true)
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
+  expiresAt   DateTime? // Auto-calculated: publishedAt + 30 days
+  
+  // ✅ Analytics (WHY: Track popular listings)
+  viewCount Int @default(0)
+  
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  savedBy SavedListing[]
+  
+  @@index([category, city, priceRaw, isActive]) // Fast search queries
+  @@index([olxId]) // Prevent duplicate scraping
+  @@index([expiresAt]) // Fast cleanup queries
+}
+
+// ========== SAVED LISTINGS (User Favorites) ==========
+
+model SavedListing {
+  id        String @id @default(cuid())
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  // ✅ User Notes (WHY: "Near metro", "Contacted owner")
+  notes String? @db.Text
+  
+  // ✅ Priority (WHY: Sort by importance)
+  priority String @default("medium") // "high", "medium", "low"
+  
+  savedAt DateTime @default(now())
+  
+  @@unique([userId, listingId]) // Can't save same listing twice
+  @@index([userId]) // Fast lookup of user's saved items
+}
+
+// ========== PRICE TRACKING (Price Drop Alerts) ==========
+
+model PriceHistory {
+  id       String @id @default(cuid())
+  olxId    String // Reference to listing
+  
+  // ✅ Price Change (WHY: "Price dropped from ₹6000 to ₹5000")
+  price    Int
+  currency String @default("INR")
+  
+  recordedAt DateTime @default(now())
+  
+  @@index([olxId, recordedAt]) // Track price over time
+}
+
+// ========== OPTIONAL: ARCHIVE TABLE ==========
+// (For data lifecycle management - discussed earlier)
+
+model ArchivedListing {
+  id         String @id @default(cuid())
+  originalId String @unique
+  
+  // Copy essential fields from Listing
+  title      String
+  priceRaw   Int
+  category   String
+  city       String
+  
+  // ✅ Archive Metadata (WHY: Know why it was archived)
+  archivedAt     DateTime @default(now())
+  archivedReason String // "expired", "sold", "auto_cleanup"
+  
+  @@index([archivedAt])
+}
+
+
