@@ -12,6 +12,18 @@ export const authClient = betterAuth({
     enabled: true,
   },
 
+  user: {
+    additionalFields: {
+      location: {
+        type: "string",
+        required: false,
+      },
+      userRoomCategory: {
+        type: "string",
+        required: false,
+      }
+    }
+  },
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,

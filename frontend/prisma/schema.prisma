@@ -15,13 +15,11 @@ model User {
   id       String  @id @default(cuid())
   email    String  @unique
   name     String
-  mobileNo String? @unique
   password String  // Hashed with bcrypt
   
   // ✅ Location Preferences (WHY: Auto-filter OLX to user's city)
   city     String?  // "Delhi", "Mumbai"
-  state    String?  // "Delhi", "Maharashtra"
-  country  String   @default("India")
+  country  String?   @default("India")
   
   // ✅ Budget Preferences (WHY: Auto-apply price filters)
   defaultBudgetMin Int? @default(0)

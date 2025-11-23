@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 w-full max-w-md px-4">
+            <div className="mt-10 relative z-10 w-full max-w-md px-4">
                 {children}
             </div>
         </div>
