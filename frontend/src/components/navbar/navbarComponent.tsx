@@ -3,19 +3,19 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react"; // optional — replace or remove if not available
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 // import { SearchIcon } from "lucide-react";
-import searchIcon from "@/app/assets/searcIcon.png";
+import searchIcon from "@/assets/searcIcon.png";
 
 type NavItem = { path: string; name: string };
 
 const navItems: NavItem[] = [
   { path: "/", name: "Home" },
   { path: "/about", name: "About" },
-  { path: "/projects", name: "Projects" },
+  { path: "/billing", name: "Billing" },
   { path: "/contact", name: "Contact" },
 ];
 
@@ -95,9 +95,9 @@ export default function EnhancedNavbarComponent({
           {/* right: actions & mobile toggle */}
           <div className="flex items-center gap-3">
             <div className="relative flex items-center">
-              <div className="relative group">
+              <div className="relative group cursor-pointer">
                 <div
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-violet-400/90 to-indigo-400/90 
+                  className="flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-gradient-to-br from-violet-400/90 to-indigo-400/90 
                   hover:from-amber-300/90 hover:to-yellow-300/90
                   transition-all duration-300 ease-out cursor-pointer shadow-md hover:shadow-lg
                   transform hover:scale-110 hover:rotate-6 active:scale-95 focus:ring-2 focus:ring-indigo-400"
@@ -107,7 +107,7 @@ export default function EnhancedNavbarComponent({
                     alt="Search"
                     width={22}
                     height={22}
-                    className="transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+                    className="cursor-pointer transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
                   />
                 </div>
 
@@ -138,7 +138,7 @@ export default function EnhancedNavbarComponent({
             <button
               aria-label={open ? "Close menu" : "Open menu"}
               onClick={() => setOpen((s) => !s)}
-              className="md:hidden p-2 rounded-lg bg-white/6 ring-1 ring-white/8 hover:bg-white/8 transition"
+              className="md:hidden cursor-pointer p-2 rounded-lg bg-white/6 ring-1 ring-white/8 hover:bg-white/8 transition"
             >
               {open ? <X size={18} /> : <Menu size={18} />}
             </button>

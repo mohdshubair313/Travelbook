@@ -1,8 +1,9 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { PrismaClient } from "@/generated/prisma/client";
+import { prisma } from '@/lib/prisma'
 
-const prisma = new PrismaClient();
+
+// const prisma = new PrismaClient();
 export const authClient = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql", // or "mysql", "postgresql", ...etc
@@ -35,3 +36,5 @@ export const authClient = betterAuth({
     }
   },
 });
+
+export type Auth = typeof authClient;

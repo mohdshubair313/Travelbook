@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button"
+import Link from "next/link";
 
 export default function Overlay() {
     const titleRef = useRef<HTMLHeadingElement>(null);
@@ -51,12 +53,9 @@ export default function Overlay() {
                     Experience the seamless blend of travel and comfort.
                     From flights to student PGs, we've got your entire journey covered.
                 </p>
-                <button
-                    ref={buttonRef}
-                    className="pointer-events-auto px-8 py-4 bg-white text-black rounded-full font-semibold text-lg hover:scale-105 transition-transform duration-300 shadow-xl hover:shadow-2xl"
-                >
-                    Start Exploring
-                </button>
+                <Link href="/dashboard">
+                    <InteractiveHoverButton>Explore Now</InteractiveHoverButton>
+                </Link>
             </div>
         </div>
     );

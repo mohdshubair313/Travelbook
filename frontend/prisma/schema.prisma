@@ -15,11 +15,12 @@ model User {
   id       String  @id @default(cuid())
   email    String  @unique
   name     String
-  password String  // Hashed with bcrypt
+  password String?
   
   // ✅ Location Preferences (WHY: Auto-filter OLX to user's city)
   city     String?  // "Delhi", "Mumbai"
   country  String?   @default("India")
+  location String?   // Added for signup form
   
   // ✅ Budget Preferences (WHY: Auto-apply price filters)
   defaultBudgetMin Int? @default(0)
@@ -27,20 +28,64 @@ model User {
   
   // ✅ Travel Preferences (WHY: Show relevant options first)
   preferredCategory   String? // "pg", "hotel", "flats"
+  userRoomCategory    String? // Added for signup form
   preferredTransport  String? // "train", "flight", "bus", "cab"
   
   // ✅ Account Status (WHY: Security + Email verification)
   isVerified    Boolean  @default(false)
-  emailVerified DateTime?
+  emailVerified Boolean @default(false)
   
   // ✅ Timestamps (WHY: Track user activity)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   // Relations
-  savedListings SavedListing[]  
+  savedListings SavedListing[]
+  sessions      Session[]
+  accounts      Account[]
   @@index([email])
   @@index([city]) // Fast lookup by location
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 }
 
 // ========== LISTINGS (Scraped OLX Data) ==========
