@@ -90,7 +90,7 @@ export default function SignupPage() {
                                 id="name"
                                 name="name"
                                 type="text"
-                                placeholder="John Doe"
+                                placeholder="Mohd Shubair"
                                 className="flex h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-200"
                             />
                         </div>
@@ -105,7 +105,7 @@ export default function SignupPage() {
                                 id="email"
                                 type="email"
                                 name="email"
-                                placeholder="john@example.com"
+                                placeholder="shubair313@gmail.com"
                                 className="flex h-10 w-full rounded-xl border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all duration-200"
                             />
                         </div>

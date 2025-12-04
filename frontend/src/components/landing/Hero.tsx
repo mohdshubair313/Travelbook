@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import Overlay from "./Overlay";
+import Link from "next/link";
+import { InteractiveHoverButton } from "../ui/interactive-hover-button";
 
 // Lazy load the 3D scene for better initial page load performance
 const Scene = dynamic(() => import("./Scene"), {

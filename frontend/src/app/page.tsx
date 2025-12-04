@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-black">
       <Hero />
-      {/* Future sections can be added here */}
-      <div className="h-screen bg-zinc-900 flex items-center justify-center text-white">
+
+      <div className="h-screen flex items-center justify-center text-white">
         <Hyperspeed
           effectOptions={{
             onSpeedUp: () => { },
