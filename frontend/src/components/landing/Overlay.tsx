@@ -37,8 +37,8 @@ export default function Overlay() {
 
     return (
         <>
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
-                <div className="text-center max-w-4xl px-6">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+                <div className="text-center max-w-4xl px-6 pointer-events-auto">
                     <h1
                         ref={titleRef}
                         className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight drop-shadow-lg"
@@ -55,11 +55,12 @@ export default function Overlay() {
                         Experience the seamless blend of travel and comfort.
                         From flights to student PGs, we've got your entire journey covered.
                     </p>
+
+                    <Link href="/dashboard">
+                        <InteractiveHoverButton className="cursor-pointer">Explore Now</InteractiveHoverButton>
+                    </Link>
                 </div>
             </div>
-            <Link href="/dashboard">
-                <InteractiveHoverButton className="cursor-pointer">Explore Now</InteractiveHoverButton>
-            </Link>
         </>
     );
 }

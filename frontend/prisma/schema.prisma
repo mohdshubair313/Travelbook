@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  
 }
 
 generator client {
@@ -203,3 +203,121 @@ model ArchivedListing {
 }
 
 
+
+// ========== TRAIN ROUTES (Scraped Train Data) ==========
+
+model TrainRoute {
+  id            String   @id @default(cuid())
+
+  // Train Identification
+  trainNumber   String   // "12301"
+  trainName     String   // "Howrah Rajdhani Express"
+  trainType     String   // "Rajdhani", "Shatabdi", "Express", "Superfast"
+
+  // Route Details
+  fromStation   String   // Station code: "NDLS"
+  fromCity      String   // "New Delhi"
+  toStation     String   // Station code: "HWH"
+  toCity        String   // "Howrah"
+
+  // Schedule
+  departureTime String   // "16:55"
+  arrivalTime   String   // "09:55"
+  duration      String   // "17h 00m"
+  distance      Int?     // in km
+  runningDays   String[] // ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+  // Pricing (cached, updated periodically)
+  priceSleeper  Int?     // Sleeper class price
+  priceAC3      Int?     // AC 3-tier price
+  priceAC2      Int?     // AC 2-tier price
+  priceAC1      Int?     // AC 1st class price
+  priceGeneral  Int?     // General class price
+
+  // Metadata
+  source        String   @default("confirmtkt") // "confirmtkt", "redbus", "irctc"
+  sourceUrl     String?
+  scrapedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isActive      Boolean  @default(true)
+
+  @@unique([trainNumber, fromStation, toStation])
+  @@index([fromCity, toCity])
+  @@index([trainNumber])
+  @@index([fromStation, toStation])
+}
+
+// ========== TRAIN SEARCH CACHE ==========
+
+model TrainSearchCache {
+  id           String   @id @default(cuid())
+  fromCity     String
+  toCity       String
+  searchDate   DateTime?
+  resultsCount Int      @default(0)
+
+  // Cache Management
+  lastSearched DateTime @default(now())
+  isStale      Boolean  @default(false)
+
+  @@unique([fromCity, toCity])
+  @@index([fromCity, toCity])
+}
+
+// ========== FLIGHT ROUTES (Scraped Flight Data) ==========
+
+model FlightRoute {
+  id            String   @id @default(cuid())
+
+  // Flight Identification
+  flightNumber  String?  // "6E 2341"
+  airline       String   // "IndiGo", "Air India", "SpiceJet"
+  airlineCode   String?  // "6E", "AI", "SG"
+
+  // Route Details
+  fromAirport   String   // Airport code: "DEL"
+  fromCity      String   // "New Delhi"
+  toAirport     String   // Airport code: "BOM"
+  toCity        String   // "Mumbai"
+
+  // Schedule
+  departureTime String   // "06:00"
+  arrivalTime   String   // "08:15"
+  duration      String   // "2h 15m"
+  stops         Int      @default(0) // 0 = non-stop
+
+  // Pricing
+  priceEconomy  Int      // Economy class price
+  priceBusiness Int?     // Business class price
+
+  // Flight Date (for which date this price is valid)
+  flightDate    DateTime
+
+  // Metadata
+  source        String   @default("ixigo") // "ixigo", "skyscanner", "makemytrip"
+  sourceUrl     String?
+  scrapedAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isActive      Boolean  @default(true)
+
+  @@index([fromCity, toCity, flightDate])
+  @@index([fromAirport, toAirport])
+  @@index([airline])
+}
+
+// ========== FLIGHT SEARCH CACHE ==========
+
+model FlightSearchCache {
+  id           String   @id @default(cuid())
+  fromCity     String
+  toCity       String
+  searchDate   DateTime
+  resultsCount Int      @default(0)
+
+  // Cache Management
+  lastSearched DateTime @default(now())
+  isStale      Boolean  @default(false)
+
+  @@unique([fromCity, toCity, searchDate])
+  @@index([fromCity, toCity])
+}

@@ -2,6 +2,7 @@
 
 import Hero from "@/components/landing/Hero";
 import Hyperspeed from "@/components/Hyperspeed";
+import ScrollStoryShelly from "@/components/ScrollStoryShelly";
 
 export default function Home() {
   return (
@@ -49,6 +50,8 @@ export default function Home() {
           }}
         />
       </div>
+
+      <ScrollStoryShelly />
     </main>
   );
 }
